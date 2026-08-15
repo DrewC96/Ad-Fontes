@@ -1,9 +1,13 @@
-# Inspect a ThML file from CCEL, printing out the top-level structure.
+"""
+Inspect a ThML file from CCEL for structure and content, printing out the root tag, attributes, top-level children, and counts of certain elements like <div1>, <scripRef>, and <foreign>.
+Usage:
+    python inspect_thml.py [work_id]
+"""
 
 import sys
 import time
 import requests
-from xml import etree
+import xml.etree.ElementTree as etree
 
 def fetch(work_id: str) -> bytes:
     url = f"https://ccel.org/ccel/s/schaff/{work_id}.xml"
@@ -14,14 +18,13 @@ def fetch(work_id: str) -> bytes:
     return resp.content
 
 def inspect(xml_bytes: bytes, max_children_shown: int = 40):
-    parser = etree.XMLParser(recover=True)  # tolerate minor malformed XML
-    tree = etree.fromstring(xml_bytes, parser=parser)
+    tree = etree.fromstring(xml_bytes)
 
     print(f"\nRoot tag: <{tree.tag}>")
     print(f"Root attributes: {dict(tree.attrib)}\n")
 
     print("Top-level children (first 40):")
-    for i, child in enumerate(tree.iterchildren()):
+    for i, child in enumerate(tree):
         if i >= max_children_shown:
             print("  ...")
             break
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     work_id = sys.argv[1] if len(sys.argv) > 1 else "anf01"
     data = fetch(work_id)
     # Save raw copy for manual inspection in a text editor too
-    with open(f"raw/{work_id}_raw.xml", "wb") as f:
+    with open(f"{work_id}_raw.xml", "wb") as f:
         f.write(data)
-    print(f"Saved raw copy to raw/{work_id}_raw.xml\n")
+    print(f"Saved raw copy to {work_id}_raw.xml\n")
     inspect(data)
