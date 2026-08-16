@@ -134,6 +134,14 @@ def parse_volume(path):
 
         for div2 in div2s:
             work_title = div2.get("title") or div2.get("shorttitle") or author_title
+
+            # Skip 19th-century editorial commentary (Roberts/Donaldson/Coxe),
+            # not primary patristic text - this project is retrieval of the
+            # Fathers' own words, not editor notes.
+            skip_patterns = ("introductory note", "elucidation")
+            if work_title.strip().lower().startswith(skip_patterns):
+                continue
+
             work_slug = slugify(f"{author_slug}-{work_title}")
 
             paragraphs = []

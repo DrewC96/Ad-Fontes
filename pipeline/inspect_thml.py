@@ -1,7 +1,13 @@
 """
-Inspect a ThML file from CCEL for structure and content, printing out the root tag, attributes, top-level children, and counts of certain elements like <div1>, <scripRef>, and <foreign>.
+Step 1 of ANF ingestion: download one volume's ThML XML from CCEL and
+print its structure so we can confirm tag names (div1/div2/p, title
+attributes, author markup, etc.) before building the real parser.
+
+Run locally — CCEL isn't reachable from Claude's sandbox network.
+
 Usage:
-    python inspect_thml.py [work_id]
+    pip install requests lxml
+    python inspect_thml.py anf01
 """
 
 import sys
