@@ -110,4 +110,70 @@ AUTHORS_META = {
             "of faith."
         ),
     },
+
+    # --- ANF Vol II ---
+    "hermas": {
+        "name": "Hermas",
+        "era": "Apostolic Fathers",
+        "birth_year": None,
+        "death_year": None,
+        "region": "Rome",
+        "bio": (
+            "Traditional author of the Shepherd of Hermas, a widely-read "
+            "early Christian text of visions, mandates, and parables. "
+            "Identity and exact dating are debated - possibly a brother "
+            "of Pope Pius I, or a distinct earlier figure."
+        ),
+    },
+    "tatian": {
+        "name": "Tatian",
+        "era": "Ante-Nicene",
+        "birth_year": 120,
+        "death_year": 180,
+        "region": "Assyria",
+        "bio": (
+            "Assyrian Christian apologist, student of Justin Martyr in "
+            "Rome. Author of the Address to the Greeks and the "
+            "Diatessaron, an early harmony of the four Gospels into a "
+            "single narrative. Later associated with the Encratite "
+            "movement, which is reflected in some source commentary."
+        ),
+    },
+    "athenagoras": {
+        "name": "Athenagoras of Athens",
+        "era": "Ante-Nicene",
+        "birth_year": 133,
+        "death_year": 190,
+        "region": "Athens",
+        "bio": (
+            "Christian apologist and philosopher. Author of A Plea for "
+            "the Christians, addressed to Emperor Marcus Aurelius, and "
+            "On the Resurrection."
+        ),
+    },
+    "theophilus": {
+        "name": "Theophilus of Antioch",
+        "era": "Ante-Nicene",
+        "birth_year": None,
+        "death_year": 185,
+        "region": "Antioch",
+        "bio": (
+            "Bishop of Antioch. Author of To Autolycus, an apologetic "
+            "work addressed to a pagan friend, notable for an early use "
+            "of the Greek term 'Trias' (Trinity)."
+        ),
+    },
+    "clement-of-alexandria": {
+        "name": "Clement of Alexandria",
+        "era": "Ante-Nicene",
+        "birth_year": 150,
+        "death_year": 215,
+        "region": "Alexandria",
+        "bio": (
+            "Head of the Catechetical School of Alexandria. Author of "
+            "Exhortation to the Heathen, The Instructor, and the "
+            "Stromata (Miscellanies) - foundational works bringing "
+            "Greek philosophy into conversation with Christian thought."
+        ),
+    },
 }

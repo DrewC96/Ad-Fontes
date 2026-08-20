@@ -1,3 +1,5 @@
+// custom bookshelf with cross and bible on top and then 5 shelves for each era. books for each fatehr in each era. when you click on a book, it opens a modal with the works of that father. each work is a link to the source. the modal has a search bar to search within the works of that father. the modal has a close button. the modal has a next and previous button to navigate between fathers. the modal has a filter to filter by era. the modal has a sort by dropdown to sort by name or number of works. the modal has a pagination to navigate between pages of works. the modal has a copy button to copy the works to clipboard. 
+
 "use client";
 
 import React, { useState } from "react";
