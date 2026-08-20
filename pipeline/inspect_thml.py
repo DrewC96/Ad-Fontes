@@ -15,13 +15,26 @@ import time
 import requests
 import xml.etree.ElementTree as etree
 
-def fetch(work_id: str) -> bytes:
+def fetch(work_id: str, max_retries: int = 3) -> bytes:
     url = f"https://ccel.org/ccel/s/schaff/{work_id}.xml"
     print(f"Fetching {url} ...")
-    resp = requests.get(url, headers={"User-Agent": "ad-fontes-research/0.1 (personal project)"})
-    resp.raise_for_status()
-    time.sleep(1)
-    return resp.content
+    last_error = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            resp = requests.get(
+                url,
+                headers={"User-Agent": "ad-fontes-research/0.1 (personal project)"},
+                timeout=30,
+            )
+            resp.raise_for_status()
+            time.sleep(1)
+            return resp.content
+        except requests.exceptions.RequestException as e:
+            last_error = e
+            print(f"  Attempt {attempt}/{max_retries} failed: {e}")
+            if attempt < max_retries:
+                time.sleep(3)
+    raise RuntimeError(f"Failed to fetch {url} after {max_retries} attempts") from last_error
 
 def inspect(xml_bytes: bytes, max_children_shown: int = 40):
     tree = etree.fromstring(xml_bytes)
@@ -55,7 +68,7 @@ if __name__ == "__main__":
     work_id = sys.argv[1] if len(sys.argv) > 1 else "anf01"
     data = fetch(work_id)
     # Save raw copy for manual inspection in a text editor too
-    with open(f"{work_id}_raw.xml", "wb") as f:
+    with open(f"raw/{work_id}_raw.xml", "wb") as f:
         f.write(data)
-    print(f"Saved raw copy to {work_id}_raw.xml\n")
+    print(f"Saved raw copy to raw/{work_id}_raw.xml\n")
     inspect(data)
