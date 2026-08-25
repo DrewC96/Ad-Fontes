@@ -15,20 +15,32 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient('https://unfztmjqxjxguyrvnicm.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVuZnp0bWpxeGp4Z3V5cnZuaWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODA1MDgsImV4cCI6MjEwMTk1NjUwOH0.xbgTehhR6qW1aXOMChq7ITvbhbEhhJxz4fQWt9MWmBk')
 
+async function getFathers() {
+  const { data, error } = await supabase
+    .from('authors')
+    .select(`
+      name,
+      slug,
+      birth_year,
+      death_year,
+      eras ( name ),
+      works ( count )
+    `)
+    .order('name')
 
+  if (error) {
+    console.error('Error fetching fathers:', error)
+    return []
+  }
 
+  return data.map((row) => ({
+    name: row.name,
+    era: row.eras?.name ?? 'Unknown',
+    works: row.works?.[0]?.count ?? 0,
+  }))
+}
 
-const FATHERS = [
-  { name: "Ignatius of Antioch", era: "Apostolic", works: 7 },
-  { name: "Irenaeus", era: "Ante-Nicene", works: 5 },
-  { name: "Tertullian", era: "Ante-Nicene", works: 31 },
-  { name: "Athanasius", era: "Nicene", works: 12 },
-  { name: "Basil the Great", era: "Nicene", works: 9 },
-  { name: "Cyril of Jerusalem", era: "Post-Nicene", works: 24 },
-  { name: "John Chrysostom", era: "Post-Nicene", works: 46 },
-  { name: "Augustine", era: "Post-Nicene", works: 38 },
-  { name: "John of Damascus", era: "Byzantine", works: 6 },
-];
+const FATHERS = await getFathers();
 
 const ERAS = [
   "Apostolic",
