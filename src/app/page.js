@@ -11,6 +11,13 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient('https://unfztmjqxjxguyrvnicm.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVuZnp0bWpxeGp4Z3V5cnZuaWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODA1MDgsImV4cCI6MjEwMTk1NjUwOH0.xbgTehhR6qW1aXOMChq7ITvbhbEhhJxz4fQWt9MWmBk')
+
+
+
+
 const FATHERS = [
   { name: "Ignatius of Antioch", era: "Apostolic", works: 7 },
   { name: "Irenaeus", era: "Ante-Nicene", works: 5 },
