@@ -13,7 +13,7 @@ import {
 
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient('https://unfztmjqxjxguyrvnicm.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVuZnp0bWpxeGp4Z3V5cnZuaWNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODA1MDgsImV4cCI6MjEwMTk1NjUwOH0.xbgTehhR6qW1aXOMChq7ITvbhbEhhJxz4fQWt9MWmBk')
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
 
 async function getFathers() {
   const { data, error } = await supabase

@@ -30,7 +30,7 @@ CHUNK_TARGET_WORDS = 250
 
 def slugify(text: str) -> str:
     text = text.lower()
-    text = text.replace("\u00e6", "ae").replace("\u0153", "oe")  # æ, œ
+    text = text.replace("\u00e6", "ae").replace("\u0153", "oe")  # æ, œv
     text = re.sub(r"[^a-z0-9]+", "-", text).strip("-")
     return text
 
