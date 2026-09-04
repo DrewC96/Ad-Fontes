@@ -636,20 +636,21 @@ html, body {
 .af-scroll-cue .label {
   font-family: "IBM Plex Mono", monospace;
 
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 
-  color: var(--parchment-dim);
+  color: var(--gold-bright);
 }
 
 .af-scroll-cue .line {
   position: relative;
 
-  width: 1px;
-  height: 32px;
+  width: 2px;
+  height: 40px;
 
-  background: rgba(236, 224, 200, 0.22);
+  background: rgba(236, 224, 200, 0.25);
 
   overflow: hidden;
 }

@@ -76,7 +76,19 @@ export default function Home() {
     <main className="af-root">
 
       {/* Hero */}
-      <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen h-[52vh] min-h-[360px] max-h-[640px] overflow-hidden">
+      <div
+        className="relative left-1/2 right-1/2 -mx-[50vw] w-screen h-screen overflow-hidden"
+        style={{
+          position: "relative",
+          left: "50%",
+          right: "50%",
+          marginLeft: "-50vw",
+          marginRight: "-50vw",
+          width: "100vw",
+          height: "100vh",
+          overflow: "hidden",
+        }}
+      >
 
         <div
           className="absolute inset-0 motion-safe:md:bg-fixed"
@@ -168,7 +180,15 @@ export default function Home() {
         </div>
 
         {/* Scroll down prompt */}
-        <div className="af-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2">
+        <div
+          className="af-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2"
+          style={{
+            position: "absolute",
+            bottom: "32px",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+        >
           <span className="label">Scroll</span>
           <div className="line" />
         </div>
