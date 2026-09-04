@@ -103,14 +103,19 @@ export default function Home() {
         />
 
         {/* Overlay content — sits above the image + gradient in stacking order */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
-
-          <div
-            className="af-mono text-xs mb-3"
-            style={{ color: "var(--gold)" }}
-          >
-            ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
-          </div>
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center text-center px-8"
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            padding: "0 32px",
+          }}
+        >
 
           <h1
             className="af-display text-4xl md:text-6xl italic font-semibold leading-tight mb-6"
@@ -123,13 +128,18 @@ export default function Home() {
             onSubmit={handleHeroSearch}
             className="flex items-center gap-2 w-full max-w-md"
             style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              width: "100%",
+              maxWidth: "400px",
               background: "rgba(0, 0, 0, 0.35)",
               border: "1px solid var(--gold)",
               padding: "10px 16px",
               backdropFilter: "blur(2px)",
             }}
           >
-            <Search size={16} color="var(--gold)" />
+            <Search size={16} color="var(--gold)" style={{ flexShrink: 0 }} />
 
             <input
               type="text"
@@ -137,9 +147,23 @@ export default function Home() {
               onChange={(e) => setHeroQuery(e.target.value)}
               placeholder="Ask the Fathers a question…"
               className="af-mono flex-1 bg-transparent outline-none text-sm italic"
-              style={{ color: "var(--parchment)" }}
+              style={{
+                color: "var(--parchment)",
+                flex: 1,
+                minWidth: 0,
+                background: "transparent",
+                border: "none",
+                outline: "none",
+              }}
             />
           </form>
+
+          <div
+            className="af-mono text-xs mt-4"
+            style={{ color: "var(--gold)" }}
+          >
+            ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
+          </div>
 
         </div>
 
