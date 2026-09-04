@@ -1,8 +1,8 @@
-// custom bookshelf with cross and bible on top and then 5 shelves for each era. books for each fatehr in each era. when you click on a book, it opens a modal with the works of that father. each work is a link to the source. the modal has a search bar to search within the works of that father. the modal has a close button. the modal has a next and previous button to navigate between fathers. the modal has a filter to filter by era. the modal has a sort by dropdown to sort by name or number of works. the modal has a pagination to navigate between pages of works. the modal has a copy button to copy the works to clipboard. 
-
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Search,
   BookOpen,
@@ -13,7 +13,7 @@ import {
 
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 async function getFathers() {
   const { data, error } = await supabase
@@ -58,46 +58,101 @@ const QUICK_QUESTIONS = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [activeEra, setActiveEra] = useState(null);
+  const [heroQuery, setHeroQuery] = useState("");
 
   const shownFathers = activeEra
     ? FATHERS.filter((father) => father.era === activeEra)
     : FATHERS;
 
+  const handleHeroSearch = (e) => {
+    e.preventDefault();
+    if (!heroQuery.trim()) return;
+    router.push(`/search?q=${encodeURIComponent(heroQuery.trim())}`);
+  };
+
   return (
     <main className="af-root">
 
-      {/* Landing Page */}
-      <div className="px-8 md:px-16 py-16 max-w-4xl mx-auto">
+      {/* Hero */}
+      <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen h-[52vh] min-h-[360px] max-h-[640px] overflow-hidden">
 
-        {/* Small heading */}
         <div
-          className="af-mono text-xs mb-8"
-          style={{ color: "var(--gold)" }}
+          className="absolute inset-0 motion-safe:md:bg-fixed"
+          style={{ position: "absolute", inset: 0 }}
         >
-          ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
+          <Image
+            src="/images/hero-library.jpg"
+            alt="A candlelit study lined with old books, a fire in the hearth"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            style={{ objectFit: "cover" }}
+          />
         </div>
 
-        {/* Title + Search */}
-        <div className="mb-6 flex items-center justify-between flex-wrap gap-6">
+        {/* Oxblood gradient so the title below stays readable */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(20,8,8,0.15) 0%, rgba(20,8,8,0.55) 65%, var(--oxblood, #2a0d0d) 100%)",
+          }}
+        />
 
-          <div>
-            <span className="af-dropcap">A</span>
+        {/* Overlay content — sits above the image + gradient in stacking order */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
 
-            <h1 className="af-display text-5xl md:text-6xl italic font-semibold leading-tight">
-              d Fontes
-            </h1>
+          <div
+            className="af-mono text-xs mb-3"
+            style={{ color: "var(--gold)" }}
+          >
+            ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
           </div>
 
-          <button type="button" className="af-header-search">
-            <Search size={14} color="var(--gold)" />
+          <h1
+            className="af-display text-4xl md:text-6xl italic font-semibold leading-tight mb-6"
+            style={{ color: "var(--parchment)" }}
+          >
+            Ad Fontes
+          </h1>
 
-            <span>
-              Search the Fathers…
-            </span>
-          </button>
+          <form
+            onSubmit={handleHeroSearch}
+            className="flex items-center gap-2 w-full max-w-md"
+            style={{
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1px solid var(--gold)",
+              padding: "10px 16px",
+              backdropFilter: "blur(2px)",
+            }}
+          >
+            <Search size={16} color="var(--gold)" />
+
+            <input
+              type="text"
+              value={heroQuery}
+              onChange={(e) => setHeroQuery(e.target.value)}
+              placeholder="Ask the Fathers a question…"
+              className="af-mono flex-1 bg-transparent outline-none text-sm italic"
+              style={{ color: "var(--parchment)" }}
+            />
+          </form>
 
         </div>
+
+        {/* Scroll down prompt */}
+        <div className="af-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2">
+          <span className="label">Scroll</span>
+          <div className="line" />
+        </div>
+
+      </div>
+
+      {/* Landing Page */}
+      <div className="px-8 md:px-16 py-16 max-w-4xl mx-auto">
 
         {/* Description */}
         <p
@@ -127,6 +182,9 @@ export default function Home() {
               type="button"
               key={question}
               className="af-chip"
+              onClick={() =>
+                router.push(`/search?q=${encodeURIComponent(question)}`)
+              }
             >
               {question}
             </button>
