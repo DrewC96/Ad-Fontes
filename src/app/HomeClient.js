@@ -46,17 +46,13 @@ export default function HomeClient({ fathers }) {
 
       {/* Hero */}
       <div
-        className="relative left-1/2 right-1/2 -mx-[50vw] w-screen h-screen overflow-hidden"
-        style={{
-          position: "relative",
-          left: "50%",
-          right: "50%",
-          marginLeft: "-50vw",
-          marginRight: "-50vw",
-          width: "100vw",
-          height: "100vh",
-          overflow: "hidden",
-        }}
+        className="relative w-full h-screen overflow-hidden"
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100vh",
+            overflow: "hidden",
+          }}
       >
 
         <div
