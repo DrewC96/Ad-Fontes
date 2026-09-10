@@ -274,6 +274,7 @@ export default function HomeClient({ fathers }) {
               type="button"
               key={father.name}
               className="af-father-seal-card"
+              onClick={() => router.push(`/fathers/${father.slug}`)}
             >
 
               <div className="af-father-seal">
@@ -328,33 +329,6 @@ export default function HomeClient({ fathers }) {
                 style={{ color: "var(--parchment-dim)" }}
               >
                 No generated answers, ever.
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="af-feature-row">
-
-            <BookOpen
-              size={16}
-              color="var(--gold)"
-            />
-
-            <div>
-
-              <div
-                className="af-display text-base italic"
-                style={{ color: "var(--gold-bright)" }}
-              >
-                Tradition-grouped
-              </div>
-
-              <div
-                className="text-sm"
-                style={{ color: "var(--parchment-dim)" }}
-              >
-                Orthodox and Catholic, side by side.
               </div>
 
             </div>

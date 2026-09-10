@@ -25,10 +25,11 @@ async function getFathers() {
   }
 
   return data.map((row) => ({
-    name: row.name,
-    era: row.eras?.name ?? "Unknown",
-    works: row.works?.[0]?.count ?? 0,
-  }));
+   name: row.name,
+   slug: row.slug,
+   era: row.eras?.name ?? "Unknown",
+   works: row.works?.[0]?.count ?? 0,
+   }));
 }
 
 export default async function Page() {
