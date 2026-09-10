@@ -45,20 +45,9 @@ export default function HomeClient({ fathers }) {
     <main className="af-root">
 
       {/* Hero */}
-      <div
-        className="relative w-full h-screen overflow-hidden"
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "100vh",
-            overflow: "hidden",
-          }}
-      >
+      <div className="af-hero">
 
-        <div
-          className="absolute inset-0 motion-safe:md:bg-fixed"
-          style={{ position: "absolute", inset: 0 }}
-        >
+        <div className="absolute inset-0 motion-safe:md:bg-fixed">
           <Image
             src="/images/hero-library.jpg"
             alt="A candlelit study lined with old books, a fire in the hearth"
@@ -66,57 +55,24 @@ export default function HomeClient({ fathers }) {
             priority
             sizes="100vw"
             className="object-cover"
-            style={{ objectFit: "cover" }}
           />
         </div>
 
         {/* Oxblood gradient so the title below stays readable */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(20,8,8,0.15) 0%, rgba(20,8,8,0.55) 65%, var(--oxblood, #2a0d0d) 100%)",
-          }}
-        />
+        <div className="af-hero-gradient" />
 
         {/* Overlay content — sits above the image + gradient in stacking order */}
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center text-center px-8"
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            padding: "0 32px",
-          }}
-        >
+        <div className="af-hero-content">
 
-          <h1
-            className="af-display text-4xl md:text-6xl italic font-semibold leading-tight mb-6"
-            style={{ color: "var(--parchment)" }}
-          >
+          <h1 className="af-display af-text-parchment text-4xl md:text-6xl italic font-semibold leading-tight mb-6">
             Ad Fontes
           </h1>
 
           <form
             onSubmit={handleHeroSearch}
-            className="flex items-center gap-2 w-full max-w-md"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              width: "100%",
-              maxWidth: "400px",
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1px solid var(--gold)",
-              padding: "10px 16px",
-              backdropFilter: "blur(2px)",
-            }}
+            className="af-hero-search"
           >
-            <Search size={16} color="var(--gold)" style={{ flexShrink: 0 }} />
+            <Search size={16} color="var(--gold)" className="shrink-0" />
 
             <input
               type="text"
@@ -124,36 +80,17 @@ export default function HomeClient({ fathers }) {
               onChange={(e) => setHeroQuery(e.target.value)}
               placeholder="Ask the Fathers a question…"
               className="af-mono flex-1 bg-transparent outline-none text-sm italic"
-              style={{
-                color: "var(--parchment)",
-                flex: 1,
-                minWidth: 0,
-                background: "transparent",
-                border: "none",
-                outline: "none",
-              }}
             />
           </form>
 
-          <div
-            className="af-mono text-xs mt-4"
-            style={{ color: "var(--gold)" }}
-          >
+          <div className="af-mono af-text-gold text-xs mt-4">
             ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
           </div>
 
         </div>
 
         {/* Scroll down prompt */}
-        <div
-          className="af-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2"
-          style={{
-            position: "absolute",
-            bottom: "32px",
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
-        >
+        <div className="af-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2">
           <span className="label">Scroll</span>
           <div className="line" />
         </div>
@@ -164,10 +101,7 @@ export default function HomeClient({ fathers }) {
       <div className="px-8 md:px-16 py-16 max-w-4xl mx-auto">
 
         {/* Description */}
-        <p
-          className="text-lg leading-relaxed mb-8 max-w-2xl"
-          style={{ color: "var(--parchment)" }}
-        >
+        <p className="af-text-parchment text-lg leading-relaxed mb-8 max-w-2xl">
           Ask a question in plain language. Read what the early Church
           Fathers actually wrote in answer — never a generated summary,
           only the passage itself, cited and linked to its source.
@@ -177,10 +111,7 @@ export default function HomeClient({ fathers }) {
         <div className="flex items-center gap-2 mb-3">
           <Sparkles size={13} color="var(--gold)" />
 
-          <span
-            className="af-mono text-xs"
-            style={{ color: "var(--gold)" }}
-          >
+          <span className="af-mono af-text-gold text-xs">
             Try asking
           </span>
         </div>
@@ -201,10 +132,7 @@ export default function HomeClient({ fathers }) {
         </div>
 
         {/* Browse by Era */}
-        <div
-          className="af-mono text-xs mb-5"
-          style={{ color: "var(--gold)" }}
-        >
+        <div className="af-mono af-text-gold text-xs mb-5">
           Browse by Era
         </div>
 
@@ -230,10 +158,7 @@ export default function HomeClient({ fathers }) {
               </button>
 
               {index < ERAS.length - 1 && (
-                <div
-                  className="af-era-track"
-                  style={{ flex: 0.4 }}
-                />
+                <div className="af-era-track" />
               )}
 
             </React.Fragment>
@@ -246,10 +171,7 @@ export default function HomeClient({ fathers }) {
         {/* Fathers */}
         <div className="flex items-center justify-between mb-5">
 
-          <span
-            className="af-mono text-xs"
-            style={{ color: "var(--gold)" }}
-          >
+          <span className="af-mono af-text-gold text-xs">
             {activeEra
               ? `${activeEra} Fathers`
               : "All Fathers"}
@@ -317,18 +239,33 @@ export default function HomeClient({ fathers }) {
 
             <div>
 
-              <div
-                className="af-display text-base italic"
-                style={{ color: "var(--gold-bright)" }}
-              >
+              <div className="af-display af-text-gold-bright text-base italic">
                 Pure retrieval
               </div>
 
-              <div
-                className="text-sm"
-                style={{ color: "var(--parchment-dim)" }}
-              >
+              <div className="af-text-parchment-dim text-sm">
                 No generated answers, ever.
+              </div>
+
+            </div>
+
+          </div>
+
+          <div className="af-feature-row">
+
+            <BookOpen
+              size={16}
+              color="var(--gold)"
+            />
+
+            <div>
+
+              <div className="af-display af-text-gold-bright text-base italic">
+                Tradition-grouped
+              </div>
+
+              <div className="af-text-parchment-dim text-sm">
+                Orthodox and Catholic, side by side.
               </div>
 
             </div>
@@ -344,17 +281,11 @@ export default function HomeClient({ fathers }) {
 
             <div>
 
-              <div
-                className="af-display text-base italic"
-                style={{ color: "var(--gold-bright)" }}
-              >
+              <div className="af-display af-text-gold-bright text-base italic">
                 Semantic search
               </div>
 
-              <div
-                className="text-sm"
-                style={{ color: "var(--parchment-dim)" }}
-              >
+              <div className="af-text-parchment-dim text-sm">
                 Matching by meaning, not keyword.
               </div>
 
@@ -369,12 +300,7 @@ export default function HomeClient({ fathers }) {
       {/* Footer */}
       <div className="af-rule mt-16" />
 
-      <div
-        className="af-mono text-[10px] text-center py-6"
-        style={{
-          color: "var(--parchment-dim)",
-        }}
-      >
+      <div className="af-mono af-text-parchment-dim text-[10px] text-center py-6">
         AD FONTES — PRIMARY SOURCE INDEX
       </div>
 
