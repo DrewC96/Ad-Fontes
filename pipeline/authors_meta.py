@@ -176,4 +176,37 @@ AUTHORS_META = {
             "Greek philosophy into conversation with Christian thought."
         ),
     },
+
+    # --- NPNF Series I (Vols 1-14) ---
+    "augustine-of-hippo": {
+        "name": "Augustine of Hippo",
+        "era": "Post-Nicene",
+        "birth_year": 354,
+        "death_year": 430,
+        "region": "Hippo Regius (North Africa)",
+        "bio": (
+            "Bishop of Hippo Regius, the most influential Latin Father "
+            "of the Church. Author of the Confessions, The City of God, "
+            "On Christian Doctrine, and the major anti-Manichaean, "
+            "anti-Donatist, and anti-Pelagian treatises collected here "
+            "(NPNF Series I, Vols. 1-8) - his writings shaped Western "
+            "theology on grace, original sin, the sacraments, and the "
+            "nature of the Church more than any other patristic figure."
+        ),
+    },
+    "john-chrysostom": {
+        "name": "John Chrysostom",
+        "era": "Post-Nicene",
+        "birth_year": 349,
+        "death_year": 407,
+        "region": "Antioch / Constantinople",
+        "bio": (
+            "Archbishop of Constantinople, called 'Chrysostom' "
+            "('golden-mouthed') for his oratory. The most prolific "
+            "Greek homilist of the patristic era, represented here "
+            "(NPNF Series I, Vols. 9-14) by his extensive homily "
+            "cycles on Matthew, John, Acts, Romans, and the Pauline "
+            "epistles, alongside treatises like On the Priesthood."
+        ),
+    },
 }
