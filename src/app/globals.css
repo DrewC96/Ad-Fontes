@@ -569,6 +569,103 @@ html, body {
   );
 }
 
+/* Interactive work-card variant — hover lift + click-through */
+
+.af-fragment-interactive {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.af-fragment-interactive:hover {
+  transform: translateY(-4px) rotate(-0.3deg);
+
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 30px rgba(120, 90, 40, 0.15),
+    0 0 0 1px rgba(201, 161, 92, 0.45);
+}
+
+.af-fragment-interactive:active {
+  transform: translateY(-1px) rotate(-0.3deg);
+}
+
+/* Progressive enhancement: static on touch/mobile per your usual pattern */
+@media (max-width: 780px) {
+  .af-fragment-interactive:hover,
+  .af-fragment-interactive:active {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-fragment-interactive {
+    transition: none;
+  }
+  .af-fragment-interactive:hover,
+  .af-fragment-interactive:active {
+    transform: none;
+  }
+}
+
+/* Chapter pagination (work detail page) */
+
+.af-chapter-nav {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.af-chapter-btn {
+  display: inline-flex;
+}
+
+.af-chapter-btn-disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.af-chapter-select {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.03em;
+
+  width: 100%;
+  margin-top: 16px;
+
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  color: var(--parchment);
+
+  padding: 8px 12px;
+
+  cursor: pointer;
+}
+
+.af-search-error {
+  color: var(--oxblood-bright);
+}
+
+.af-passage-highlight {
+  background: rgba(201, 161, 92, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(201, 161, 92, 0.5);
+  padding: 4px 8px;
+  margin: 0 -8px 24px;
+  transition: background 1.5s ease;
+}
+
+.af-chapter-select:hover,
+.af-chapter-select:focus {
+  border-color: var(--gold);
+  outline: none;
+}
+
 /* Scroll */
 
 .af-scroll {

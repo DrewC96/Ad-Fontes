@@ -9,6 +9,7 @@ import {
   ScrollText,
   Sparkles,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 
 const ERAS = [
@@ -30,15 +31,44 @@ export default function HomeClient({ fathers }) {
   const router = useRouter();
   const [activeEra, setActiveEra] = useState(null);
   const [heroQuery, setHeroQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState(null);
 
   const shownFathers = activeEra
     ? fathers.filter((father) => father.era === activeEra)
     : fathers;
 
+  const runSemanticSearch = async (query) => {
+    setIsSearching(true);
+    setSearchError(null);
+
+    try {
+      const res = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.results?.length) {
+        setSearchError("No matching passage found — try rephrasing.");
+        return;
+      }
+
+      const top = data.results[0];
+      router.push(`/works/${top.work_id}?chunk=${top.chunk_index}`);
+    } catch (err) {
+      console.error(err);
+      setSearchError("Search failed. Try again.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleHeroSearch = (e) => {
     e.preventDefault();
-    if (!heroQuery.trim()) return;
-    router.push(`/search?q=${encodeURIComponent(heroQuery.trim())}`);
+    if (!heroQuery.trim() || isSearching) return;
+    runSemanticSearch(heroQuery.trim());
   };
 
   return (
@@ -72,16 +102,31 @@ export default function HomeClient({ fathers }) {
             onSubmit={handleHeroSearch}
             className="af-hero-search"
           >
-            <Search size={16} color="var(--gold)" className="shrink-0" />
+            {isSearching ? (
+              <Loader2
+                size={16}
+                color="var(--gold)"
+                className="shrink-0 animate-spin"
+              />
+            ) : (
+              <Search size={16} color="var(--gold)" className="shrink-0" />
+            )}
 
             <input
               type="text"
               value={heroQuery}
               onChange={(e) => setHeroQuery(e.target.value)}
               placeholder="Ask the Fathers a question…"
-              className="af-mono flex-1 bg-transparent outline-none text-sm italic"
+              disabled={isSearching}
+              className="af-mono flex-1 bg-transparent outline-none text-sm italic disabled:opacity-60"
             />
           </form>
+
+          {searchError && (
+            <div className="af-mono af-search-error text-xs mt-2">
+              {searchError}
+            </div>
+          )}
 
           <div className="af-mono af-text-gold text-xs mt-4">
             ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
@@ -122,9 +167,8 @@ export default function HomeClient({ fathers }) {
               type="button"
               key={question}
               className="af-chip"
-              onClick={() =>
-                router.push(`/search?q=${encodeURIComponent(question)}`)
-              }
+              disabled={isSearching}
+              onClick={() => runSemanticSearch(question)}
             >
               {question}
             </button>

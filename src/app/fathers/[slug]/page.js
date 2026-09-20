@@ -100,25 +100,29 @@ export default async function FatherPage({ params }) {
           </p>
         ) : (
           <div className="af-works-grid">
-            {father.works.map((work) => (
-              <div key={work.id} className="af-fragment">
-                <div className="af-display af-text-ink italic leading-tight">
-                  {work.title}
-                </div>
-
-                {(work.volume_number || work.original_language) && (
-                  <div className="text-sm mt-2 opacity-70 af-text-ink">
-                    {[
-                      work.volume_number ? `Vol. ${work.volume_number}` : null,
-                      work.original_language,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </div>
-                )}
+          {father.works.map((work) => (
+            <Link
+              key={work.id}
+              href={`/works/${work.id}`}
+              className="af-fragment af-fragment-interactive"
+            >
+              <div className="af-display af-text-ink italic leading-tight">
+                {work.title}
               </div>
-            ))}
-          </div>
+
+              {(work.volume_number || work.original_language) && (
+                <div className="text-sm mt-2 opacity-70 af-text-ink">
+                  {[
+                    work.volume_number ? `Vol. ${work.volume_number}` : null,
+                    work.original_language,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </div>
+              )}
+            </Link>
+          ))}
+        </div>
         )}
       </div>
     </main>

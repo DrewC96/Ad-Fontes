@@ -8,10 +8,6 @@ API calls.
 Setup:
     pip install supabase python-dotenv
 
-Create a `.env` file in this folder (add it to .gitignore!):
-    SUPABASE_URL=https://your-project.supabase.co
-    SUPABASE_KEY=your-service-role-key   # NOT the anon key - inserts need write access
-
 Usage:
     python insert_to_supabase.py anf01
     python insert_to_supabase.py npnf101
