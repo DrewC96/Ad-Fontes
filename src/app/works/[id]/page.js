@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ChapterJump from "./ChapterJump";
 import PassageList from "./PassageList";
+import Breadcrumb from "./Breadcrumb";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -172,14 +173,13 @@ export default async function WorkPage({ params, searchParams }) {
 function WorkHeader({ work }) {
   return (
     <>
-      {work.author?.slug && (
-        <Link
-          href={`/fathers/${work.author.slug}`}
-          className="af-mono af-text-gold text-xs inline-flex items-center gap-1 mb-8"
-        >
-          <ChevronLeft size={14} /> Back to {work.author.name}
-        </Link>
-      )}
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: work.author.name, href: `/fathers/${work.author.slug}` },
+          { label: work.title },
+        ]}
+      />
 
       <h1 className="af-display af-text-parchment text-4xl italic mb-2">
         {work.title}

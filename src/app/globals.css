@@ -652,6 +652,86 @@ html, body {
   color: var(--oxblood-bright);
 }
 
+/* Debug ranked-results panel */
+
+.af-debug-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--parchment-dim);
+  cursor: pointer;
+}
+
+.af-debug-toggle input[type="checkbox"] {
+  accent-color: var(--gold);
+}
+
+.af-debug-result {
+  display: block;
+  background: rgba(201, 161, 92, 0.06);
+  border: 1px solid rgba(201, 161, 92, 0.22);
+  padding: 14px 16px;
+  color: var(--parchment);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.af-breadcrumb {
+  margin-bottom: 1.5rem;
+}
+.af-breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.af-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.af-breadcrumb-link {
+  color: var(--gold);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+.af-breadcrumb-link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+.af-breadcrumb-current {
+  color: var(--parchment-dim);
+  max-width: 32ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.af-breadcrumb-sep {
+  color: var(--parchment-dim);
+  opacity: 0.5;
+}
+@media (max-width: 640px) {
+  .af-breadcrumb-current {
+    max-width: 18ch;
+  }
+}
+
+.af-debug-result:hover {
+  border-color: var(--gold);
+}
+
+.af-debug-score {
+  color: var(--gold-bright);
+  font-weight: 500;
+}
+
 .af-passage-highlight {
   background: rgba(201, 161, 92, 0.22);
   box-shadow: inset 0 0 0 1px rgba(201, 161, 92, 0.5);

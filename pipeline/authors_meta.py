@@ -209,4 +209,165 @@ AUTHORS_META = {
             "epistles, alongside treatises like On the Priesthood."
         ),
     },
+
+    # --- NPNF Series II (Vol. 1: Eusebius) ---
+    "eusebius-of-caesarea": {
+        "name": "Eusebius of Caesarea",
+        "era": "Nicene",
+        "birth_year": 260,
+        "death_year": 340,
+        "region": "Caesarea (Palestine)",
+        "bio": (
+            "Bishop of Caesarea, 'the Father of Church History'. "
+            "Author of the Church History (Historia Ecclesiastica), "
+            "the principal surviving narrative source for the first "
+            "three centuries of Christianity, and the Life of "
+            "Constantine, alongside his own panegyric oration in "
+            "praise of Constantine (NPNF Series II, Vol. 1)."
+        ),
+    },
+    "constantine-the-great": {
+        "name": "Constantine the Great",
+        "era": "Nicene",
+        "birth_year": 272,
+        "death_year": 337,
+        "region": "Roman Empire",
+        "bio": (
+            "Roman Emperor, not a theologian or Church Father, but "
+            "included here because NPNF Series II, Vol. 1 preserves "
+            "his own Oration to the Assembly of the Saints as a "
+            "primary source appended to Eusebius's Life of "
+            "Constantine - the oration is Constantine's own "
+            "composition, not Eusebius's, so it is attributed to him "
+            "directly rather than folded into Eusebius's works."
+        ),
+    },
+    "socrates-scholasticus": {
+        "name": "Socrates Scholasticus",
+        "era": "Post-Nicene",
+        "birth_year": 380,
+        "death_year": 439,  # death year uncertain - after 439, exact date unknown
+        "region": "Constantinople",
+        "bio": (
+            "Constantinopolitan lawyer ('scholasticus') and church "
+            "historian. Author of the Ecclesiastical History covering "
+            "306-439 AD, continuing Eusebius's history down through "
+            "the Arian and other 4th/5th-century controversies "
+            "(NPNF Series II, Vol. 2)."
+        ),
+    },
+    "sozomen": {
+        "name": "Sozomen",
+        "era": "Post-Nicene",
+        "birth_year": None,
+        "death_year": 450,  # approximate
+        "region": "Palestine / Constantinople",
+        "bio": (
+            "Lawyer and church historian, born in Palestine, active "
+            "in Constantinople. Author of an Ecclesiastical History "
+            "covering roughly the same period as Socrates "
+            "Scholasticus (whose work he knew and partly drew on), "
+            "with more attention to monasticism (NPNF Series II, "
+            "Vol. 2)."
+        ),
+    },
+    "theodoret-of-cyrus": {
+        "name": "Theodoret of Cyrus",
+        "era": "Post-Nicene",
+        "birth_year": 393,
+        "death_year": 457,
+        "region": "Cyrus (Syria)",
+        "bio": (
+            "Bishop of Cyrus, prominent Antiochene theologian and "
+            "historian, a central figure in the Nestorian and "
+            "Eutychian controversies. Represented here (NPNF Series "
+            "II, Vol. 3) by his Ecclesiastical History, the dialogue "
+            "Eranistes, his Letters, and his Counter-statements "
+            "responding to Cyril of Alexandria's Twelve Anathemas."
+        ),
+    },
+    "jerome": {
+        "name": "Jerome",
+        "era": "Post-Nicene",
+        "birth_year": 347,
+        "death_year": 420,
+        "region": "Stridon / Bethlehem",
+        "bio": (
+            "Translator of the Vulgate, biblical scholar, and "
+            "polemicist. Represented here (NPNF Series II, Vol. 3) by "
+            "his Lives of Illustrious Men (De Viris Illustribus) and "
+            "his Apology against Rufinus, written during their bitter "
+            "controversy over Origen."
+        ),
+    },
+    "gennadius-of-marseilles": {
+        "name": "Gennadius of Marseilles",
+        "era": "Post-Nicene",
+        "birth_year": None,
+        "death_year": 496,  # approximate
+        "region": "Marseilles",
+        "bio": (
+            "Priest of Marseilles. Continued Jerome's Lives of "
+            "Illustrious Men with a further list of ecclesiastical "
+            "writers after Jerome's death (NPNF Series II, Vol. 3)."
+        ),
+    },
+    "rufinus-of-aquileia": {
+        "name": "Rufinus of Aquileia",
+        "era": "Post-Nicene",
+        "birth_year": 344,
+        "death_year": 411,
+        "region": "Aquileia / Palestine",
+        "bio": (
+            "Monk, translator, and theologian, best known for his "
+            "Latin translations of Origen and his continuation of "
+            "Eusebius's Church History. Engaged in a bitter public "
+            "controversy with his former friend Jerome over Origen's "
+            "orthodoxy. Represented here (NPNF Series II, Vol. 3) by "
+            "his own Apology, his Commentary on the Apostles' Creed, "
+            "and prefatory/appended material to his translations."
+        ),
+    },
+    "anastasius-i-of-rome": {
+        "name": "Anastasius I of Rome",
+        "era": "Post-Nicene",
+        "birth_year": None,
+        "death_year": 401,
+        "region": "Rome",
+        "bio": (
+            "Bishop of Rome (Pope), 399-401. Represented here (NPNF "
+            "Series II, Vol. 3) by a single letter to John, Bishop of "
+            "Jerusalem, concerning the controversy over Rufinus and "
+            "Origen's orthodoxy."
+        ),
+    },
+    "pamphilus-of-caesarea": {
+        "name": "Pamphilus of Caesarea",
+        "era": "Ante-Nicene",
+        "birth_year": 240,
+        "death_year": 309,
+        "region": "Caesarea (Palestine)",
+        "bio": (
+            "Priest, scholar, and martyr, teacher and namesake of "
+            "Eusebius of Caesarea ('Eusebius Pamphili'). Author of a "
+            "Defence (Apology) for Origen, preserved only through "
+            "Rufinus's Latin translation - represented here (NPNF "
+            "Series II, Vol. 3) as Pamphilus's own composition, "
+            "distinct from Rufinus's own appended epilogue to it."
+        ),
+    },
+    "cyril-of-alexandria": {
+        "name": "Cyril of Alexandria",
+        "era": "Post-Nicene",
+        "birth_year": 376,
+        "death_year": 444,
+        "region": "Alexandria",
+        "bio": (
+            "Patriarch of Alexandria, central figure of the "
+            "Nestorian controversy and the Council of Ephesus (431). "
+            "Represented here (NPNF Series II, Vol. 3) by his Twelve "
+            "Anathemas against Nestorius, to which Theodoret's "
+            "Counter-statements in the same volume directly respond."
+        ),
+    },
 }

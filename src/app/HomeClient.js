@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Search,
-  BookOpen,
   ScrollText,
   Sparkles,
   ChevronRight,
@@ -33,14 +33,19 @@ export default function HomeClient({ fathers }) {
   const [heroQuery, setHeroQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState(null);
+  const [debugMode, setDebugMode] = useState(false);
+  const [debugResults, setDebugResults] = useState(null);
 
   const shownFathers = activeEra
     ? fathers.filter((father) => father.era === activeEra)
     : fathers;
 
-  const runSemanticSearch = async (query) => {
+  // Debug-only: fetches the ranked list and shows it inline with scores,
+  // instead of sending the user to the results page.
+  const runDebugSearch = async (query) => {
     setIsSearching(true);
     setSearchError(null);
+    setDebugResults(null);
 
     try {
       const res = await fetch("/api/search", {
@@ -55,8 +60,7 @@ export default function HomeClient({ fathers }) {
         return;
       }
 
-      const top = data.results[0];
-      router.push(`/works/${top.work_id}?chunk=${top.chunk_index}`);
+      setDebugResults(data.results);
     } catch (err) {
       console.error(err);
       setSearchError("Search failed. Try again.");
@@ -65,10 +69,18 @@ export default function HomeClient({ fathers }) {
     }
   };
 
+  const runSearch = (query) => {
+    if (debugMode) {
+      runDebugSearch(query);
+    } else {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
   const handleHeroSearch = (e) => {
     e.preventDefault();
     if (!heroQuery.trim() || isSearching) return;
-    runSemanticSearch(heroQuery.trim());
+    runSearch(heroQuery.trim());
   };
 
   return (
@@ -128,6 +140,21 @@ export default function HomeClient({ fathers }) {
             </div>
           )}
 
+          {/* Dev-only debug toggle — shows ranked results with similarity
+              scores inline instead of going to the results page. Remove
+              before Phase 5 polish. */}
+          <label className="af-mono af-debug-toggle text-xs mt-3">
+            <input
+              type="checkbox"
+              checked={debugMode}
+              onChange={(e) => {
+                setDebugMode(e.target.checked);
+                setDebugResults(null);
+              }}
+            />
+            Debug: show ranked results
+          </label>
+
           <div className="af-mono af-text-gold text-xs mt-4">
             ANF / NPNF · 38 VOLUMES · RETRIEVAL ONLY
           </div>
@@ -141,6 +168,45 @@ export default function HomeClient({ fathers }) {
         </div>
 
       </div>
+
+      {/* Debug ranked results panel */}
+      {debugResults && (
+        <div className="px-8 md:px-16 py-10 max-w-4xl mx-auto">
+          <div className="af-mono af-text-gold text-xs mb-4">
+            Ranked results ({debugResults.length}) — deduped
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {debugResults.map((result, index) => (
+              <Link
+                key={result.id}
+                href={`/works/${result.work_id}?chunk=${result.chunk_index}`}
+                className="af-debug-result"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="af-mono af-text-gold text-xs">
+                    #{index + 1} · work {result.work_id} · chunk{" "}
+                    {result.chunk_index}
+                  </span>
+                  <span className="af-mono af-debug-score">
+                    {(result.similarity * 100).toFixed(1)}%
+                  </span>
+                </div>
+
+                {result.citation && (
+                  <div className="af-mono text-xs opacity-70 mb-2">
+                    {result.citation}
+                  </div>
+                )}
+
+                <p className="text-sm leading-relaxed opacity-90">
+                  {result.chunk_text}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Landing Page */}
       <div className="px-8 md:px-16 py-16 max-w-4xl mx-auto">
@@ -168,7 +234,7 @@ export default function HomeClient({ fathers }) {
               key={question}
               className="af-chip"
               disabled={isSearching}
-              onClick={() => runSemanticSearch(question)}
+              onClick={() => runSearch(question)}
             >
               {question}
             </button>
@@ -272,7 +338,7 @@ export default function HomeClient({ fathers }) {
         <div className="af-rule mb-8" />
 
         {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 
           <div className="af-feature-row">
 
@@ -289,27 +355,6 @@ export default function HomeClient({ fathers }) {
 
               <div className="af-text-parchment-dim text-sm">
                 No generated answers, ever.
-              </div>
-
-            </div>
-
-          </div>
-
-          <div className="af-feature-row">
-
-            <BookOpen
-              size={16}
-              color="var(--gold)"
-            />
-
-            <div>
-
-              <div className="af-display af-text-gold-bright text-base italic">
-                Tradition-grouped
-              </div>
-
-              <div className="af-text-parchment-dim text-sm">
-                Orthodox and Catholic, side by side.
               </div>
 
             </div>
