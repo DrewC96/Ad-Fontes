@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
-import { ChevronLeft, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { searchPassages } from "../../lib/search";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -31,7 +32,9 @@ export default async function SearchPage({ searchParams }) {
     return (
       <main className="af-root">
         <div className="px-8 md:px-16 py-16 max-w-3xl mx-auto">
-          <BackLink />
+          <Breadcrumb
+            items={[{ label: "Home", href: "/" }, { label: "Search" }]}
+          />
           <p className="af-text-parchment-dim">No search query provided.</p>
         </div>
       </main>
@@ -55,7 +58,12 @@ export default async function SearchPage({ searchParams }) {
   return (
     <main className="af-root">
       <div className="px-8 md:px-16 py-16 max-w-3xl mx-auto">
-        <BackLink />
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: `Search: "${query}"` },
+          ]}
+        />
 
         <div className="flex items-center gap-2 mb-2">
           <Search size={16} color="var(--gold)" />
@@ -107,16 +115,5 @@ export default async function SearchPage({ searchParams }) {
         </div>
       </div>
     </main>
-  );
-}
-
-function BackLink() {
-  return (
-    <Link
-      href="/"
-      className="af-mono af-text-gold text-xs inline-flex items-center gap-1 mb-8"
-    >
-      <ChevronLeft size={14} /> Back to search
-    </Link>
   );
 }

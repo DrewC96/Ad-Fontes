@@ -666,6 +666,78 @@ html, body {
   accent-color: var(--gold);
 }
 
+.af-back-to-top {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--oxblood);
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  border-radius: 1rem;
+  padding: 0.85rem 1.5rem 1rem;
+  cursor: pointer;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+.af-back-to-top-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.af-back-to-top-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+}
+.af-back-to-top-line {
+  position: relative;
+  width: 2px;
+  height: 48px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--gold) 35%, transparent);
+  border-radius: 1px;
+}
+.af-back-to-top-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 20px;
+  background: var(--gold);
+  animation: af-top-line-travel 1.6s ease-in-out infinite;
+}
+@keyframes af-top-line-travel {
+  0% { top: 100%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: -20%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .af-back-to-top-line::before {
+    animation: none;
+    opacity: 0.6;
+    top: 20%;
+  }
+}
+@media (max-width: 640px) {
+  .af-back-to-top {
+    padding: 0.65rem 1.1rem 0.8rem;
+  }
+  .af-back-to-top-line {
+    height: 36px;
+  }
+}
+
 .af-debug-result {
   display: block;
   background: rgba(201, 161, 92, 0.06);

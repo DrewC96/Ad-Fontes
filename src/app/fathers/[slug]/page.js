@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
-import { ChevronLeft } from "lucide-react";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -66,12 +66,12 @@ export default async function FatherPage({ params }) {
   return (
     <main className="af-root">
       <div className="px-8 md:px-16 py-16 max-w-4xl mx-auto">
-        <Link
-          href="/"
-          className="af-mono af-text-gold text-xs inline-flex items-center gap-1 mb-8"
-        >
-          <ChevronLeft size={14} /> Back to all Fathers
-        </Link>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: father.name },
+          ]}
+        />
 
         <h1 className="af-display af-text-parchment text-4xl italic mb-2">
           {father.name}

@@ -4,7 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ChapterJump from "./ChapterJump";
 import PassageList from "./PassageList";
-import Breadcrumb from "./Breadcrumb";
+import Breadcrumb from "@/components/Breadcrumb";
+import BackToTop from "@/components/BackToTop";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -160,13 +161,14 @@ export default async function WorkPage({ params, searchParams }) {
           <PassageList passages={passages} highlightChunk={targetChunk} />
         </div>
 
-        <div className="af-chapter-nav mt-8">
-          <NavButton href={prevHref} direction="prev" />
-          <div />
-          <NavButton href={nextHref} direction="next" />
-        </div>
+              <div className="af-chapter-nav mt-8">
+        <NavButton href={prevHref} direction="prev" />
+        <div />
+        <NavButton href={nextHref} direction="next" />
       </div>
-    </main>
+      <BackToTop />
+    </div>
+  </main>
   );
 }
 
