@@ -370,4 +370,49 @@ AUTHORS_META = {
             "Counter-statements in the same volume directly respond."
         ),
     },
+    "athanasius-of-alexandria": {
+        "name": "Athanasius of Alexandria",
+        "era": "Nicene",
+        "birth_year": 296,
+        "death_year": 373,
+        "region": "Alexandria",
+        "bio": (
+            "Bishop of Alexandria, present at Nicaea (325) as a young "
+            "deacon and the leading defender of Nicene orthodoxy "
+            "through decades of Arian controversy and repeated exile. "
+            "Represented here (NPNF Series II, Vol. 4) by his major "
+            "anti-Arian works (Contra Gentes, De Incarnatione, "
+            "Orationes contra Arianos), the Life of Antony, his "
+            "apologetic writings, and his Festal and Personal Letters."
+        ),
+    },
+    "eusebius-of-nicomedia": {
+        "name": "Eusebius of Nicomedia",
+        "era": "Nicene",
+        "birth_year": None,
+        "death_year": 341,
+        "region": "Nicomedia / Constantinople",
+        "bio": (
+            "Bishop of Nicomedia, later Constantinople - a leading "
+            "Arian sympathizer and political opponent of Athanasius, "
+            "distinct from Eusebius of Caesarea. Represented here "
+            "(NPNF Series II, Vol. 4) by a single letter preserved "
+            "and quoted within Athanasius's own writing against him."
+        ),
+    },
+    "author-of-the-historia-acephala": {
+        "name": "Author of the Historia Acephala",
+        "era": "Post-Nicene",
+        "birth_year": None,
+        "death_year": None,
+        "region": "Alexandria (Egypt)",
+        "bio": (
+            "Unknown compiler of the Historia Acephala ('headless "
+            "history' - its opening is lost), an anonymous ancient "
+            "chronicle of events in Athanasius's episcopate. Not "
+            "written by Athanasius himself; preserved alongside his "
+            "own letters (NPNF Series II, Vol. 4) as a historical "
+            "source about him rather than by him."
+        ),
+    },
 }

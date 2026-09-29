@@ -1,32 +1,43 @@
 """
 Consolidated inspection/diagnostic tooling for the ingestion pipeline.
 Replaces: inspect_thml.py, inspect_raw_local.py, inspect_thml_nested.py,
-check_letters.py — same behavior, one file, dispatched by subcommand.
+check_letters.py - same behavior, one file, dispatched by subcommand.
+(Named thml_inspect.py, NOT inspect.py - a file called inspect.py shadows
+Python's own stdlib `inspect` module and breaks imports.)
 
 Usage:
-    python inspect.py fetch anf01
-        Download one volume's raw ThML XML from CCEL, save it to
-        raw/{work_id}_raw.xml, and print its top-level div1 structure.
-        (was: inspect_thml.py)
+    python thml_inspect.py fetch anf01
+    python thml_inspect.py fetch npnf205 npnf206 npnf207
+        Download one or more volumes' raw ThML XML from CCEL, save each to
+        raw/{work_id}_raw.xml. With a single volume, also prints its
+        top-level div1 structure. With several, just saves them and prints
+        a summary (a failed download is reported at the end and doesn't
+        abort the rest).
 
-    python inspect.py top raw/npnf103_raw.xml
-        Same top-level structural scan as `fetch`, but reads an
-        already-downloaded raw XML file instead of hitting the network.
+    python thml_inspect.py top raw/npnf103_raw.xml
+        Top-level structural scan of an already-downloaded raw XML file.
         Also flags any <div1> elements nested somewhere other than as a
         direct child of ThML.body.
-        (was: inspect_raw_local.py)
 
-    python inspect.py nested raw/npnf101_raw.xml "The Confessions"
+    python thml_inspect.py nested raw/npnf101_raw.xml "The Confessions"
         Deep-dive into one <div1>'s nested div2/div3/p structure, by
         matching a substring of its title attribute.
-        (was: inspect_thml_nested.py)
 
-    python inspect.py letters raw/npnf101_parsed.json
+    python thml_inspect.py works npnf205 npnf206 npnf207
+        Preview which WORKS parse_thml.py would create for each volume
+        (after front-matter filtering and work-boundary detection), with
+        passage counts - WITHOUT resolving authors. Use this to see every
+        work title in a volume at once, so all the author overrides for
+        it can be written in one pass instead of discovering them one
+        parse failure at a time. Needs raw/{work_id}_raw.xml already
+        downloaded (see `fetch`).
+
+    python thml_inspect.py letters raw/npnf101_parsed.json
         Sanity-check citation formatting on already-parsed "Letter"
         works in a parsed JSON output file.
-        (was: check_letters.py)
 """
 
+import os
 import sys
 import json
 import time
@@ -36,9 +47,9 @@ import xml.etree.ElementTree as etree
 
 
 # ---------------------------------------------------------------------------
-# Shared fetch. Deliberately duplicated (not imported) from
-# batch_parse_npnf1.py, so this diagnostic tool has no dependency on a
-# real pipeline-stage script.
+# Shared fetch. Deliberately duplicated (not imported) from a pipeline
+# stage script, so the fetch/top/nested/letters tools have no dependency
+# on parse_thml.py. (Only the `works` subcommand imports from it, lazily.)
 # ---------------------------------------------------------------------------
 
 def fetch(work_id: str, max_retries: int = 3) -> bytes:
@@ -64,9 +75,7 @@ def fetch(work_id: str, max_retries: int = 3) -> bytes:
 
 
 # ---------------------------------------------------------------------------
-# `top` — top-level div1 structural scan (from inspect_thml.py +
-# inspect_raw_local.py, merged — the local-file version had a couple of
-# extra checks the remote version didn't, so this keeps the superset).
+# `top` - top-level div1 structural scan
 # ---------------------------------------------------------------------------
 
 def inspect_top(xml_bytes: bytes, max_children_shown: int = 60):
@@ -77,7 +86,7 @@ def inspect_top(xml_bytes: bytes, max_children_shown: int = 60):
 
     body = tree.find("ThML.body")
     if body is None:
-        print("No <ThML.body> found — falling back to scanning the whole tree.")
+        print("No <ThML.body> found - falling back to scanning the whole tree.")
         body = tree
 
     print("ThML.body direct children (tag counts):")
@@ -118,8 +127,7 @@ def inspect_top(xml_bytes: bytes, max_children_shown: int = 60):
 
 
 # ---------------------------------------------------------------------------
-# `nested` — deep-dive into one div1's div2/div3/p structure
-# (from inspect_thml_nested.py, unchanged)
+# `nested` - deep-dive into one div1's div2/div3/p structure
 # ---------------------------------------------------------------------------
 
 def find_div1_by_title(tree, title_substring: str):
@@ -170,8 +178,57 @@ def inspect_nested(path: str, title_substring: str):
 
 
 # ---------------------------------------------------------------------------
-# `letters` — QA check on parsed JSON output for "Letter" works
-# (from check_letters.py, unchanged)
+# `works` - preview the works parse_thml.py would create, minus authors
+# ---------------------------------------------------------------------------
+
+def inspect_works(work_id: str):
+    # Lazy import: only this subcommand depends on the parser, so the
+    # other diagnostic tools keep working even if parse_thml.py is mid-edit.
+    from parse_thml import (
+        is_front_matter_title,
+        find_work_boundaries,
+        _npnf_collect_paragraphs,
+        _npnf_chunk_paragraphs,
+    )
+
+    path = f"raw/{work_id}_raw.xml"
+    if not os.path.exists(path):
+        print(f"=== {work_id} === MISSING {path} - run `python thml_inspect.py fetch {work_id}` first\n")
+        return
+
+    root = etree.parse(path).getroot()
+    body = root.find("ThML.body")
+
+    print(f"=== {work_id} ===")
+    total_works = 0
+    total_passages = 0
+    for div1 in body.findall("div1"):
+        div1_title = div1.get("title") or div1.get("shorttitle") or ""
+        if is_front_matter_title(div1_title):
+            continue
+
+        boundaries = find_work_boundaries(div1)
+        is_collection = not (len(boundaries) == 1 and boundaries[0][1] is div1)
+        mode = "COLLECTION of separate works" if is_collection else "single work"
+        print(f"\n  [div1] {div1_title!r}  ({mode})")
+
+        for work_title, container in boundaries:
+            if is_front_matter_title(work_title):
+                continue
+            paragraphs = []
+            _npnf_collect_paragraphs(container, paragraphs)
+            passages = _npnf_chunk_paragraphs(paragraphs)
+            if not passages:
+                continue
+            total_works += 1
+            total_passages += len(passages)
+            print(f"      - {work_title!r}  [{len(passages)} passages]")
+
+    print(f"\n  => {total_works} works, {total_passages} passages\n")
+
+
+# ---------------------------------------------------------------------------
+# `letters` - QA check on parsed JSON output for "Letter" works
 # ---------------------------------------------------------------------------
 
 def inspect_letters(path: str):
@@ -202,8 +259,8 @@ def main():
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p_fetch = sub.add_parser("fetch", help="Download + inspect one volume from CCEL")
-    p_fetch.add_argument("work_id", nargs="?", default="anf01")
+    p_fetch = sub.add_parser("fetch", help="Download one or more volumes from CCEL")
+    p_fetch.add_argument("work_ids", nargs="*", default=["anf01"])
 
     p_top = sub.add_parser("top", help="Inspect an already-downloaded raw XML file")
     p_top.add_argument("raw_path", nargs="?", default="raw/npnf103_raw.xml")
@@ -212,17 +269,35 @@ def main():
     p_nested.add_argument("raw_path")
     p_nested.add_argument("title_substring")
 
+    p_works = sub.add_parser("works", help="Preview the works the parser would create, minus authors")
+    p_works.add_argument("work_ids", nargs="+")
+
     p_letters = sub.add_parser("letters", help="QA-check Letter works in parsed JSON output")
     p_letters.add_argument("json_path", nargs="?", default="raw/npnf101_parsed.json")
 
     args = parser.parse_args()
 
     if args.command == "fetch":
-        data = fetch(args.work_id)
-        with open(f"raw/{args.work_id}_raw.xml", "wb") as f:
-            f.write(data)
-        print(f"Saved raw copy to raw/{args.work_id}_raw.xml\n")
-        inspect_top(data)
+        os.makedirs("raw", exist_ok=True)
+        failures = []
+        for work_id in args.work_ids:
+            try:
+                data = fetch(work_id)
+            except Exception as e:
+                print(f"  FAILED: {work_id}: {e}\n")
+                failures.append(work_id)
+                continue
+            with open(f"raw/{work_id}_raw.xml", "wb") as f:
+                f.write(data)
+            print(f"Saved raw copy to raw/{work_id}_raw.xml")
+            if len(args.work_ids) == 1:
+                inspect_top(data)
+
+        if len(args.work_ids) > 1:
+            ok = [w for w in args.work_ids if w not in failures]
+            print(f"\nDownloaded {len(ok)}/{len(args.work_ids)}: {', '.join(ok) or '(none)'}")
+            if failures:
+                print(f"FAILED (re-run just these): {' '.join(failures)}")
 
     elif args.command == "top":
         with open(args.raw_path, "rb") as f:
@@ -231,6 +306,10 @@ def main():
 
     elif args.command == "nested":
         inspect_nested(args.raw_path, args.title_substring)
+
+    elif args.command == "works":
+        for work_id in args.work_ids:
+            inspect_works(work_id)
 
     elif args.command == "letters":
         inspect_letters(args.json_path)

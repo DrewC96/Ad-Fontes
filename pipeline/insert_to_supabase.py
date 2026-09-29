@@ -8,6 +8,10 @@ API calls.
 Setup:
     pip install supabase python-dotenv
 
+Create a `.env` file in this folder (add it to .gitignore!):
+    SUPABASE_URL=https://your-project.supabase.co
+    SUPABASE_KEY=your-service-role-key   # NOT the anon key - inserts need write access
+
 Usage:
     python insert_to_supabase.py anf01
     python insert_to_supabase.py npnf101
@@ -43,6 +47,10 @@ SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 ORIGINAL_LANGUAGE_BY_AUTHOR_SLUG = {
     "augustine-of-hippo": "Latin",
     "john-chrysostom": "Greek",
+    "jerome": "Latin",
+    "gennadius-of-marseilles": "Latin",
+    "rufinus-of-aquileia": "Latin",
+    "anastasius-i-of-rome": "Latin",
 }
 DEFAULT_ORIGINAL_LANGUAGE = "Greek"  # preserves prior ANF-era default behavior
 

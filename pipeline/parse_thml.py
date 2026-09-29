@@ -245,6 +245,7 @@ NPNF1_AUTHOR_MAP = {
 # resolved via NPNF2_WORK_AUTHOR_OVERRIDE instead.
 NPNF2_DEFAULT_AUTHOR = {
     "npnf201": "Eusebius of Caesarea",
+    "npnf204": "Athanasius of Alexandria",
 }
 
 # Exceptions to the default above, keyed by volume then by a lowercase
@@ -277,6 +278,10 @@ NPNF2_WORK_AUTHOR_OVERRIDE = {
         "apology for himself against the books of rufinus": "Jerome",
         "commentary on the apostles": "Rufinus of Aquileia",
         "peroration of rufinus": "Rufinus of Aquileia",
+    },
+    "npnf204": {
+        "letter of eusebius": "Eusebius of Caesarea",
+        "historia acephala": "Author of the Historia Acephala",
     },
 }
 
@@ -333,6 +338,8 @@ FRONT_MATTER_TITLE_CONTAINS = (
     "memoir of",  # editorial biographical sketch, e.g. npnf202's "Memoir of Sozomen."
     "manuscripts",  # bibliographic apparatus, e.g. npnf203's "Manuscripts and Editions of Separate Works."
     "chronological table",  # e.g. npnf203's "Chronological Tables to accompany the History and Life of Theodoret."
+    "excursus",  # modern editor's scholarly digression, e.g. npnf204's "Excursus A."
+    "additional note",  # editor's appended scholarly note, e.g. npnf204's "Additional Note on Apol. C. Arianos, \u00a750."
     "elucidation",
     "prolegomena",
     "chief events",
