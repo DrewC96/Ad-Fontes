@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { withFrom } from "@/lib/trail";
 
-export default function ChapterJump({ workId, chapters, currentPage }) {
+export default function ChapterJump({ workId, chapters, currentPage, from }) {
   const router = useRouter();
 
   return (
@@ -11,7 +12,9 @@ export default function ChapterJump({ workId, chapters, currentPage }) {
       <select
         className="af-chapter-select"
         value={currentPage}
-        onChange={(e) => router.push(`/works/${workId}?chapter=${e.target.value}`)}
+        onChange={(e) =>
+          router.push(withFrom(`/works/${workId}?chapter=${e.target.value}`, from))
+        }
       >
         {chapters.map((chapter, index) => (
           <option key={index} value={index + 1}>

@@ -1,19 +1,23 @@
-// components/Breadcrumb.jsx
 import Link from "next/link";
+import { parseSearchTrail } from "@/lib/trail";
 
 /**
- * Hierarchical breadcrumb trail: Home > Author > Work.
- * Always reflects site structure, regardless of how the user
- * actually arrived at the page (search, direct link, etc).
+ * Breadcrumb trail: Home > [Search] > Author > Work.
+ * Follows site structure, plus a search crumb after Home when the user
+ * arrived from a search (a validated `from` URL is passed in).
  *
  * items: [{ label, href }] — omit href on the last item (current page).
+ * from:  optional search URL to show as a crumb.
  */
-export default function Breadcrumb({ items }) {
+export default function Breadcrumb({ items, from }) {
+  const trail = parseSearchTrail(from);
+  const all = trail ? [items[0], trail, ...items.slice(1)] : items;
+
   return (
     <nav aria-label="Breadcrumb" className="af-breadcrumb">
       <ol className="af-breadcrumb-list">
-        {items.map((item, i) => {
-          const isLast = i === items.length - 1;
+        {all.map((item, i) => {
+          const isLast = i === all.length - 1;
           return (
             <li key={i} className="af-breadcrumb-item">
               {isLast || !item.href ? (

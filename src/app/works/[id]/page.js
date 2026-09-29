@@ -6,6 +6,7 @@ import ChapterJump from "./ChapterJump";
 import PassageList from "./PassageList";
 import Breadcrumb from "@/components/Breadcrumb";
 import BackToTop from "@/components/BackToTop";
+import { withFrom } from "@/lib/trail";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -84,7 +85,7 @@ function findChapterForChunk(chapters, targetChunk) {
 
 export default async function WorkPage({ params, searchParams }) {
   const { id } = await params;
-  const { chapter, chunk } = await searchParams;
+  const { chapter, chunk, from } = await searchParams;
 
   const work = await getWorkMeta(id);
   if (!work) notFound();
@@ -96,7 +97,7 @@ export default async function WorkPage({ params, searchParams }) {
     return (
       <main className="af-root">
         <div className="px-8 md:px-16 py-16 max-w-3xl mx-auto">
-          <WorkHeader work={work} />
+          <WorkHeader work={work} from={from} />
           <p className="af-text-parchment-dim">
             No passages indexed yet for this work.
           </p>
@@ -129,14 +130,19 @@ export default async function WorkPage({ params, searchParams }) {
     next ? next.startIndex : null
   );
 
-  const prevHref = currentPage > 1 ? `/works/${id}?chapter=${currentPage - 1}` : null;
-  const nextHref =
-    currentPage < totalChapters ? `/works/${id}?chapter=${currentPage + 1}` : null;
+  const prevHref =
+  currentPage > 1
+    ? withFrom(`/works/${id}?chapter=${currentPage - 1}`, from)
+    : null;
+const nextHref =
+  currentPage < totalChapters
+    ? withFrom(`/works/${id}?chapter=${currentPage + 1}`, from)
+    : null;
 
   return (
     <main className="af-root">
       <div className="px-8 md:px-16 py-16 max-w-3xl mx-auto">
-        <WorkHeader work={work} />
+        <WorkHeader work={work} from={from} />
 
         <div className="af-rule mb-6" />
 
@@ -155,7 +161,7 @@ export default async function WorkPage({ params, searchParams }) {
           <NavButton href={nextHref} direction="next" />
         </div>
 
-        <ChapterJump workId={id} chapters={chapters} currentPage={currentPage} />
+        <ChapterJump workId={id} chapters={chapters} currentPage={currentPage} from={from} />
 
         <div className="af-scroll mt-8">
           <PassageList passages={passages} highlightChunk={targetChunk} />
@@ -172,10 +178,11 @@ export default async function WorkPage({ params, searchParams }) {
   );
 }
 
-function WorkHeader({ work }) {
+function WorkHeader({ work, from }) {
   return (
     <>
       <Breadcrumb
+        from={from}
         items={[
           { label: "Home", href: "/" },
           { label: work.author.name, href: `/fathers/${work.author.slug}` },

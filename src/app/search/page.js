@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { Search } from "lucide-react";
 import { searchPassages, SearchRateLimitError } from "../../lib/search";
 import Breadcrumb from "@/components/Breadcrumb";
+import { withFrom } from "@/lib/trail";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -59,6 +60,7 @@ export default async function SearchPage({ searchParams }) {
 
   const workIds = [...new Set(results.map((r) => r.work_id))];
   const workMeta = await getWorkMetaMap(workIds);
+  const here = `/search?q=${encodeURIComponent(query)}`;
 
   return (
     <main className="af-root">
@@ -97,7 +99,7 @@ export default async function SearchPage({ searchParams }) {
             return (
               <Link
                 key={result.id}
-                href={`/works/${result.work_id}?chunk=${result.chunk_index}`}
+                href={withFrom(`/works/${result.work_id}?chunk=${result.chunk_index}`, here)}
                 className="af-fragment af-fragment-interactive"
               >
                 <div className="af-mono af-text-gold text-xs mb-2">
