@@ -256,6 +256,17 @@ html, body {
   color: var(--parchment);
 }
 
+.af-hero img {
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 768px) {
+  .af-hero img {
+    object-position: 62% center;
+  }
+}
+
 /* Navigation ribbons */
 
 .af-ribbons {
