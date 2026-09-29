@@ -856,10 +856,31 @@ html, body {
 
 .af-passage-highlight {
   background: rgba(201, 161, 92, 0.22);
+  border-left: 3px solid var(--oxblood);
   box-shadow: inset 0 0 0 1px rgba(201, 161, 92, 0.5);
-  padding: 4px 8px;
-  margin: 0 -8px 24px;
-  transition: background 1.5s ease;
+  padding: 10px 12px;
+  margin: 0 -12px 24px -15px;
+  animation: af-passage-pulse 1.6s ease-out 0.4s both;
+}
+
+.af-passage-match-label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--oxblood);
+  margin-bottom: 6px;
+}
+
+/* Starts brighter, settles to the resting tone. The 0.4s delay lets the
+   smooth scroll land first; `both` holds the start color during the delay. */
+@keyframes af-passage-pulse {
+  from { background: rgba(201, 161, 92, 0.55); }
+  to   { background: rgba(201, 161, 92, 0.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .af-passage-highlight { animation: none; }
 }
 
 .af-chapter-select:hover,
