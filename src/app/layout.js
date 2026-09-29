@@ -13,7 +13,12 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Ad Fontes",
-  description: "Online Searchable Library of Historical Chhristian Texts and Documents",
+  description: "Online Searchable Library of Historical Christian Texts and Documents",
+};
+
+export const viewport = {
+  themeColor: "#7c2a24",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }) {
