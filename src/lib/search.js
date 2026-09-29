@@ -6,10 +6,12 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 const GEMINI_EMBEDDING_MODEL = "gemini-embedding-001";
 const OUTPUT_DIMENSIONALITY = 768;
+
+// Longer queries are truncated before embedding so nobody can burn quota
+// by submitting huge strings.
+const MAX_QUERY_LENGTH = 300;
 
 // Passages from the same work whose chunk_index falls within this many
 // chunks of an already-kept result are treated as the same underlying
@@ -18,17 +20,73 @@ const OUTPUT_DIMENSIONALITY = 768;
 // to one result with this window.
 const DEDUPE_WINDOW = 5;
 
-export async function embedQuery(query) {
-  const embedResponse = await ai.models.embedContent({
-    model: GEMINI_EMBEDDING_MODEL,
-    contents: query,
-    config: {
-      taskType: "RETRIEVAL_QUERY",
-      outputDimensionality: OUTPUT_DIMENSIONALITY,
-    },
-  });
+// Thrown when Gemini returns HTTP 429 so the UI can show a "busy" message
+// instead of a generic failure.
+export class SearchRateLimitError extends Error {
+  constructor() {
+    super("Embedding rate limit reached");
+    this.name = "SearchRateLimitError";
+  }
+}
 
-  return embedResponse.embeddings[0].values;
+// Created on first use so a missing key gives a clear error at search time
+// instead of breaking module import.
+let aiClient = null;
+function getAi() {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error(
+      "Missing GEMINI_API_KEY. Copy .env.example to .env.local and add your key."
+    );
+  }
+  aiClient ??= new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  return aiClient;
+}
+
+// Small in-memory LRU cache of query embeddings. Best-effort only: each
+// serverless instance has its own copy, but repeated searches (refreshes,
+// shared links) usually land on a warm instance and skip the Gemini call.
+const EMBEDDING_CACHE_MAX = 200;
+const embeddingCache = new Map();
+
+export async function embedQuery(query) {
+  const text = (query ?? "").trim().slice(0, MAX_QUERY_LENGTH);
+  if (!text) {
+    throw new Error("Empty search query");
+  }
+
+  const cached = embeddingCache.get(text);
+  if (cached) {
+    // Re-insert to mark as most recently used.
+    embeddingCache.delete(text);
+    embeddingCache.set(text, cached);
+    return cached;
+  }
+
+  let values;
+  try {
+    const embedResponse = await getAi().models.embedContent({
+      model: GEMINI_EMBEDDING_MODEL,
+      contents: text,
+      config: {
+        taskType: "RETRIEVAL_QUERY",
+        outputDimensionality: OUTPUT_DIMENSIONALITY,
+      },
+    });
+    values = embedResponse.embeddings[0].values;
+  } catch (err) {
+    if (err?.status === 429) {
+      throw new SearchRateLimitError();
+    }
+    throw err;
+  }
+
+  embeddingCache.set(text, values);
+  if (embeddingCache.size > EMBEDDING_CACHE_MAX) {
+    // Map iterates in insertion order, so the first key is the oldest.
+    embeddingCache.delete(embeddingCache.keys().next().value);
+  }
+
+  return values;
 }
 
 // Results must already be sorted by similarity descending (match_passages

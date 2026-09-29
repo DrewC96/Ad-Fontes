@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 import { Search } from "lucide-react";
-import { searchPassages } from "../../lib/search";
+import { searchPassages, SearchRateLimitError } from "../../lib/search";
 import Breadcrumb from "@/components/Breadcrumb";
 
 const supabase = createClient(
@@ -26,7 +26,7 @@ async function getWorkMetaMap(workIds) {
 
 export default async function SearchPage({ searchParams }) {
   const { q } = await searchParams;
-  const query = (q ?? "").trim();
+  const query = (q ?? "").trim().slice(0, 300);
 
   if (!query) {
     return (
@@ -43,14 +43,19 @@ export default async function SearchPage({ searchParams }) {
 
   let results = [];
   let searchFailed = false;
+  let rateLimited = false;
 
   try {
-    const raw = await searchPassages(query, { rawMatchCount: 25 });
-    results = raw.slice(0, 8);
-  } catch (err) {
-    console.error("Search page error:", err);
+  const raw = await searchPassages(query, { rawMatchCount: 25 });
+  results = raw.slice(0, 8);
+} catch (err) {
+  console.error("Search page error:", err);
+  if (err instanceof SearchRateLimitError) {
+    rateLimited = true;
+  } else {
     searchFailed = true;
   }
+}
 
   const workIds = [...new Set(results.map((r) => r.work_id))];
   const workMeta = await getWorkMetaMap(workIds);
