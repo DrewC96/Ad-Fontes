@@ -51,6 +51,18 @@ ORIGINAL_LANGUAGE_BY_AUTHOR_SLUG = {
     "gennadius-of-marseilles": "Latin",
     "rufinus-of-aquileia": "Latin",
     "anastasius-i-of-rome": "Latin",
+    "ambrose-of-milan": "Latin",
+    "sulpitius-severus": "Latin",
+    "vincent-of-lerins": "Latin",
+    "john-cassian": "Latin",
+    "leo-the-great": "Latin",
+    "gregory-the-great": "Latin",
+    "celestine-i-of-rome": "Latin",
+    "vigilius-of-rome": "Latin",
+    "agatho-of-rome": "Latin",
+    "council-of-sardica-343": "Latin",
+    "council-of-carthage-419": "Latin",
+    "council-of-carthage-under-cyprian-256": "Latin",
 }
 DEFAULT_ORIGINAL_LANGUAGE = "Greek"  # preserves prior ANF-era default behavior
 
@@ -197,6 +209,7 @@ def main(work_id: str, replace: bool = False):
 
 
 ALL_NPNF1_VOLUMES = [f"npnf1{n:02d}" for n in range(1, 15)]  # npnf101..npnf114
+ALL_NPNF2_VOLUMES = [f"npnf2{n:02d}" for n in range(1, 15)]  # npnf201..npnf214
 
 
 if __name__ == "__main__":
@@ -207,6 +220,9 @@ if __name__ == "__main__":
     if "--all-npnf1" in args:
         args = [a for a in args if a != "--all-npnf1"]
         work_ids = ALL_NPNF1_VOLUMES
+    elif "--all-npnf2" in args:
+        args = [a for a in args if a != "--all-npnf2"]
+        work_ids = ALL_NPNF2_VOLUMES
     elif args:
         work_ids = args
     else:

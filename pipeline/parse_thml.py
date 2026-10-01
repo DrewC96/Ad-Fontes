@@ -246,6 +246,11 @@ NPNF1_AUTHOR_MAP = {
 NPNF2_DEFAULT_AUTHOR = {
     "npnf201": "Eusebius of Caesarea",
     "npnf204": "Athanasius of Alexandria",
+    "npnf205": "Gregory of Nyssa",
+    "npnf206": "Jerome",
+    "npnf208": "Basil of Caesarea",
+    "npnf210": "Ambrose of Milan",
+    "npnf212": "Leo the Great",
 }
 
 # Exceptions to the default above, keyed by volume then by a lowercase
@@ -283,30 +288,142 @@ NPNF2_WORK_AUTHOR_OVERRIDE = {
         "letter of eusebius": "Eusebius of Caesarea",
         "historia acephala": "Author of the Historia Acephala",
     },
+    "npnf207": {
+        "catechetical lectures": "Cyril of Jerusalem",
+        "gregory nazianzen": "Gregory of Nazianzus",
+    },
+    "npnf209": {
+        "exact exposition": "John of Damascus",
+    },
+    "npnf210": {
+        # Symmachus's pagan Memorial, preserved within Ambrose's correspondence
+        "memorial of symmachus": "Symmachus",
+    },
+    "npnf211": {
+        "sulpitius severus": "Sulpitius Severus",
+        "life of st. martin": "Sulpitius Severus",
+        "commonitory": "Vincent of Lerins",
+        "cassian": "John Cassian",
+        "twelve books on the institutes": "John Cassian",
+    },
+    "npnf212": {
+        "pastoral rule": "Gregory the Great",
+        "gregory the great": "Gregory the Great",
+    },
+    "npnf213": {
+        "selected epistles of gregory the great": "Gregory the Great",
+        "ephraim syrus": "Ephrem the Syrian",
+        "aphrahat": "Aphrahat",
+    },
+    "npnf214": {
+        # Regional councils bundled in one div1 with no single section
+        # default - each already splits into its own work via the
+        # collection-detection logic, resolved individually here.
+        "council of ancyra": "Council of Ancyra (314)",
+        "council of neocæsarea": "Council of Neocaesarea (315)",
+        "council of grangra": "Council of Gangra (340)",  # [sic] source title's own spelling
+        "synod of antioch in encæniis": "Synod of Antioch (341)",
+        "synod of laodicea": "Council of Laodicea (363)",
+        "council of sardica": "Council of Sardica (343)",
+        "ccxvii blessed fathers who assembled at carthage": "Council of Carthage (419)",
+        "constantinople held under nectarius": "Council of Constantinople under Nectarius (394)",
+        "carthage held under cyprian": "Council of Carthage under Cyprian (256)",
+
+        # Individually-authored letters embedded within council sections -
+        # checked before the section defaults above catch them as generic
+        # conciliar material.
+        "cyril": "Cyril of Alexandria",
+        "letter of pope cœlestine": "Celestine I of Rome",
+        "tome of st. leo": "Leo the Great",
+        "anathematisms of the emperor justinian": "Justinian I",
+        "decretal letter of pope vigilius": "Vigilius of Rome",
+        "letter of pope agatho": "Agatho of Rome",
+        "letter of agatho and of the roman synod": "Agatho of Rome",
+
+        # Appendix of non-conciliar canons and letters - genuinely many
+        # individual authors, several referred to only as "Of the Same" /
+        # "The Same" after their first mention, resolved here by a
+        # distinguishing phrase from each one's own title rather than by
+        # tracking document order.
+        "canons of the holy and altogether august apostles": "Apostolic Canons (Anonymous)",
+        "blessed dionysius": "Dionysius of Alexandria",
+        "blessed peter, archbishop of alexandria": "Peter of Alexandria",
+        "thaumaturgus": "Gregory Thaumaturgus",
+        "athanasius": "Athanasius of Alexandria",
+        "basil": "Basil of Caesarea",
+        "second canonical epistle of the same": "Basil of Caesarea",
+        "third epistle of the same to the same": "Basil of Caesarea",
+        "difference of meats": "Basil of Caesarea",
+        "diodorus bishop of tarsus": "Basil of Caesarea",
+        "separate from a woman": "Basil of Caesarea",
+        "chorepiscopi": "Basil of Caesarea",
+        "suffragans": "Basil of Caesarea",
+        "st. letoïus": "Gregory of Nyssa",
+        "gregory theologus": "Gregory of Nazianzus",
+        "amphilochius the bishop to seleucus": "Amphilochius of Iconium",
+        "timothy the most holy bishop of alexandria": "Timothy of Alexandria",
+        "prosphonesus of theophilus": "Theophilus of Alexandria",
+        "account of lycus": "Theophilus of Alexandria",
+        "to agatho the bishop": "Theophilus of Alexandria",
+        "to menas the bishop": "Theophilus of Alexandria",
+        "cathari": "Theophilus of Alexandria",
+        "libya and pentapolis": "Cyril of Alexandria",
+        "patriarch of constantinople and of the holy synod": "Gennadius of Constantinople",
+    },
 }
 
 
-def _npnf1_resolve_author(work_id: str, work_title: str) -> str:
+# Some NPNF2 volumes (npnf214, the Ecumenical Councils compilation) bundle
+# MULTIPLE distinct councils under one volume, each needing its own default
+# author - a single whole-volume default isn't enough, and the same work
+# title ("Extracts from the Acts. Session I.") recurs identically under
+# several different councils, so work-title alone can't disambiguate which
+# one it belongs to either. This maps work_id -> a list of
+# (div1_title_substring, author) pairs, checked against the ENCLOSING
+# section's own title, after NPNF2_WORK_AUTHOR_OVERRIDE and before falling
+# back to NPNF2_DEFAULT_AUTHOR.
+NPNF2_SECTION_DEFAULT_AUTHOR = {
+    "npnf214": [
+        ("first ecumenical council", "First Council of Nicaea (325)"),
+        ("second ecumenical council", "First Council of Constantinople (381)"),
+        ("third ecumenical council", "Council of Ephesus (431)"),
+        ("fourth ecumenical council", "Council of Chalcedon (451)"),
+        ("fifth ecumenical council", "Second Council of Constantinople (553)"),
+        ("sixth ecumenical council", "Third Council of Constantinople (680)"),
+        ("council in trullo", "Council in Trullo (692)"),
+        ("seventh ecumenical council", "Second Council of Nicaea (787)"),
+    ],
+}
+
+
+def _npnf1_resolve_author(work_id: str, div1_title: str, work_title: str) -> str:
     author_name = NPNF1_AUTHOR_MAP.get(work_id)
     if author_name is None:
         raise ValueError(f"No author mapped for {work_id!r} - add it to NPNF1_AUTHOR_MAP")
     return author_name
 
 
-def _npnf2_resolve_author(work_id: str, work_title: str) -> str:
+def _npnf2_resolve_author(work_id: str, div1_title: str, work_title: str) -> str:
     t = work_title.strip().lower().rstrip(".")
     for key, author in NPNF2_WORK_AUTHOR_OVERRIDE.get(work_id, {}).items():
         if key in t:
             return author
+
+    section_defaults = NPNF2_SECTION_DEFAULT_AUTHOR.get(work_id)
+    if section_defaults:
+        d1 = (div1_title or "").strip().lower().rstrip(".")
+        for section_key, author in section_defaults:
+            if section_key in d1:
+                return author
 
     default = NPNF2_DEFAULT_AUTHOR.get(work_id)
     if default is not None:
         return default
 
     raise ValueError(
-        f"Can't resolve an author for work {work_title!r} in {work_id!r} - "
-        f"add an entry to NPNF2_WORK_AUTHOR_OVERRIDE (or NPNF2_DEFAULT_AUTHOR "
-        f"if this volume turns out to have one sensible default after all)."
+        f"Can't resolve an author for work {work_title!r} (section {div1_title!r}) "
+        f"in {work_id!r} - add an entry to NPNF2_WORK_AUTHOR_OVERRIDE, "
+        f"NPNF2_SECTION_DEFAULT_AUTHOR, or NPNF2_DEFAULT_AUTHOR."
     )
 
 
@@ -339,6 +456,14 @@ FRONT_MATTER_TITLE_CONTAINS = (
     "manuscripts",  # bibliographic apparatus, e.g. npnf203's "Manuscripts and Editions of Separate Works."
     "chronological table",  # e.g. npnf203's "Chronological Tables to accompany the History and Life of Theodoret."
     "excursus",  # modern editor's scholarly digression, e.g. npnf204's "Excursus A."
+    "dates of treatises",  # editor's chronology table, e.g. npnf205's "Dates of Treatises, &c., Here Translated."
+    "life and writings of",  # translator's biographical intro, e.g. npnf211's "Life and Writings of Sulpitius Severus."
+    "note on section",  # translator's appendix notes, e.g. npnf211's "Appendix I. Note on Section 41, Page 143."
+    "general literature",  # editor's bibliography, e.g. npnf213's "General Literature of Gregory's Life and Times."
+    "(notes)",  # editorial manuscript/textual notes, e.g. npnf213's "Regula Pastoralis (Notes)."
+    "historical note",  # e.g. npnf214's "Historical Note on the Lost 'Tome' of the Second Council."
+    "appended note",  # e.g. npnf214's div1 "Appended Note on the Eastern Editions of Synodical Literature."
+    "note on the",  # e.g. npnf214's "Note on the Emperor's Edict to the Synod." (superset of "note on section")
     "additional note",  # editor's appended scholarly note, e.g. npnf204's "Additional Note on Apol. C. Arianos, \u00a750."
     "elucidation",
     "prolegomena",
@@ -368,6 +493,32 @@ def is_front_matter_title(title: str) -> bool:
     if not t:
         return True  # untitled containers are never real content
     return any(k in t for k in FRONT_MATTER_TITLE_CONTAINS)
+
+
+# Titles that are only skippable as a WHOLE WORK, never as a nested
+# citation label. Kept separate from FRONT_MATTER_TITLE_CONTAINS because a
+# nested "Prologue." is real content elsewhere (Theodoret's Dialogues, the
+# Life of Antony) - dropping it there would change already-verified
+# volumes. As a standalone work, though, a bare "Note." or "Prologue."
+# (npnf209, John of Damascus) is editorial/prefatory framing.
+WORK_LEVEL_SKIP_EXACT = {
+    "note", "prologue",
+    # npnf210: a short editorial summary of Symmachus's memorial, distinct
+    # from (and duplicating) "The Memorial of Symmachus, Prefect of the
+    # City." which has the actual primary text - kept, this one dropped.
+    "memorial of symmachus, the prefect of the city",
+    # npnf214: modern editorial analysis of a medieval authorship dispute
+    # (citing 16th/17th-century scholars), not ancient content at all -
+    # despite sitting under the Nicaea II section, it isn't a council
+    # document or anyone's primary composition.
+    "examination of the caroline books",
+}
+
+
+def is_skippable_work_title(title: str) -> bool:
+    if is_front_matter_title(title):
+        return True
+    return (title or "").strip().lower().rstrip(".") in WORK_LEVEL_SKIP_EXACT
 
 
 def _npnf_extract_text_and_refs(p_elem):
@@ -432,6 +583,14 @@ def is_heading_restatement(p_text: str, shorttitle: str, title: str) -> bool:
         remainder = p_norm[m.end():].lstrip(".- ")
         if remainder == title_norm or remainder in title_norm or title_norm in remainder:
             return True
+
+    # Some editions restate a chapter's descriptive title as its own first
+    # paragraph with NO numbering prefix at all (e.g. Sulpitius Severus,
+    # John Cassian) - the paragraph text just IS the title, verbatim. If
+    # a short paragraph exactly equals the title with nothing else, it's
+    # the heading, not body prose.
+    if p_norm == title_norm:
+        return True
 
     return False
 
@@ -577,7 +736,7 @@ def parse_npnf_volume(path, work_id, resolve_author):
             continue
 
         for work_title, container in find_work_boundaries(div1):
-            if is_front_matter_title(work_title):
+            if is_skippable_work_title(work_title):
                 continue
 
             paragraphs = []
@@ -587,7 +746,7 @@ def parse_npnf_volume(path, work_id, resolve_author):
             if not passages:
                 continue  # nothing but front matter found here - not a real work
 
-            author_name = resolve_author(work_id, work_title)
+            author_name = resolve_author(work_id, div1_title, work_title)
             author_slug = slugify(author_name)
 
             work_slug = slugify(f"{author_slug}-{work_title}")
@@ -630,8 +789,8 @@ def parse_volume(work_id: str):
     )
 
 
-if __name__ == "__main__":
-    work_id = sys.argv[1] if len(sys.argv) > 1 else "anf01"
+
+def _run_one(work_id: str, show_sample: bool):
     data = parse_volume(work_id)
 
     out_path = f"raw/{work_id}_parsed.json"
@@ -640,16 +799,30 @@ if __name__ == "__main__":
 
     total_works = sum(len(a["works"]) for a in data)
     total_passages = sum(w["passage_count"] for a in data for w in a["works"])
-    print(f"Parsed {len(data)} author(s), {total_works} works, {total_passages} passages")
-    print(f"Written to {out_path}\n")
-
-    print("Author / work breakdown:")
+    print(f"\n=== {work_id}: {len(data)} author(s), {total_works} works, "
+          f"{total_passages} passages -> {out_path}")
     for a in data:
         print(f"  {a['name']} ({len(a['works'])} works)")
         for w in a["works"]:
             print(f"    - {w['title']}  [{w['passage_count']} passages]")
 
-    if data and data[0]["works"] and data[0]["works"][0]["passages"]:
+    if show_sample and data and data[0]["works"] and data[0]["works"][0]["passages"]:
         sample = data[0]["works"][0]["passages"][0]
         print(f"\nSample passage (citation={sample['citation']!r}, {sample['word_count']} words):")
         print(f"  {sample['text'][:300]}...")
+
+
+if __name__ == "__main__":
+    work_ids = sys.argv[1:] or ["anf01"]
+    failures = []
+    for work_id in work_ids:
+        try:
+            _run_one(work_id, show_sample=(len(work_ids) == 1))
+        except Exception as e:
+            print(f"\n=== {work_id}: FAILED - {e}")
+            failures.append(work_id)
+
+    if len(work_ids) > 1:
+        print(f"\nParsed {len(work_ids) - len(failures)}/{len(work_ids)} volumes.")
+        if failures:
+            print(f"FAILED: {' '.join(failures)}")

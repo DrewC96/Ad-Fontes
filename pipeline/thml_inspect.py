@@ -186,6 +186,7 @@ def inspect_works(work_id: str):
     # other diagnostic tools keep working even if parse_thml.py is mid-edit.
     from parse_thml import (
         is_front_matter_title,
+        is_skippable_work_title,
         find_work_boundaries,
         _npnf_collect_paragraphs,
         _npnf_chunk_paragraphs,
@@ -213,7 +214,7 @@ def inspect_works(work_id: str):
         print(f"\n  [div1] {div1_title!r}  ({mode})")
 
         for work_title, container in boundaries:
-            if is_front_matter_title(work_title):
+            if is_skippable_work_title(work_title):
                 continue
             paragraphs = []
             _npnf_collect_paragraphs(container, paragraphs)
