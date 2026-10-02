@@ -47,16 +47,16 @@ export default async function SearchPage({ searchParams }) {
   let rateLimited = false;
 
   try {
-  const raw = await searchPassages(query, { rawMatchCount: 25 });
-  results = raw.slice(0, 8);
-} catch (err) {
-  console.error("Search page error:", err);
-  if (err instanceof SearchRateLimitError) {
-    rateLimited = true;
-  } else {
-    searchFailed = true;
+    const raw = await searchPassages(query, { rawMatchCount: 25 });
+    results = raw.slice(0, 8);
+  } catch (err) {
+    console.error("Search page error:", err);
+    if (err instanceof SearchRateLimitError) {
+      rateLimited = true;
+    } else {
+      searchFailed = true;
+    }
   }
-}
 
   const workIds = [...new Set(results.map((r) => r.work_id))];
   const workMeta = await getWorkMetaMap(workIds);
@@ -87,7 +87,19 @@ export default async function SearchPage({ searchParams }) {
           </p>
         )}
 
-        {!searchFailed && results.length === 0 && (
+        {rateLimited && (
+          <div className="af-search-error af-mono text-sm">
+            <p className="mb-3">
+              Search is busy right now. Please try again in a few seconds.
+            </p>
+            {/* Plain <a> forces a full reload so a cached error page isn't reused */}
+            <a href={here} className="af-text-gold underline">
+              Try again
+            </a>
+          </div>
+        )}
+
+        {!searchFailed && !rateLimited && results.length === 0 && (
           <p className="af-text-parchment-dim">
             No matching passage found — try rephrasing your question.
           </p>

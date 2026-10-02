@@ -15,6 +15,10 @@ Resumable: only ever processes passages where embedding IS NULL, so
 re-running on a new day picks up exactly where it left off. Stops
 cleanly (not a crash) if the daily quota is hit mid-run.
  
+Survives dropped Supabase connections: the server closes long-lived HTTP/2
+connections after ~10,000 requests, so every DB call goes through db(),
+which reconnects with a fresh client and retries.
+ 
 Setup:
     pip install google-genai
  
@@ -30,6 +34,7 @@ import os
 import re
 import time
 import argparse
+import httpx
 from dotenv import load_dotenv
 from supabase import create_client
 from google import genai
@@ -43,6 +48,7 @@ SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
  
 client = genai.Client(api_key=GEMINI_API_KEY)
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
  
 EMBED_MODEL = "gemini-embedding-001"
 OUTPUT_DIM = 768             # matches passages.embedding vector(768) - Matryoshka-truncated
@@ -51,9 +57,23 @@ DB_FETCH_SIZE = 200          # passages pulled from Supabase per round-trip
 DAILY_REQUEST_BUFFER = 1400  # stop short of the real daily cap, leaving headroom
  
  
-def fetch_unembedded_passages(supabase, limit):
+def db(op, retries=4):
+    """Run op(supabase), reconnecting with a fresh client if the connection drops."""
+    global supabase
+    for attempt in range(1, retries + 1):
+        try:
+            return op(supabase)
+        except httpx.TransportError as e:
+            if attempt == retries:
+                raise
+            print(f"    DB connection dropped ({e.__class__.__name__}); reconnecting...")
+            time.sleep(2 * attempt)
+            supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+ 
+ 
+def fetch_unembedded_passages(sb, limit):
     result = (
-        supabase.table("passages")
+        sb.table("passages")
         .select("id, chunk_text")
         .is_("embedding", "null")
         .order("id")
@@ -117,8 +137,6 @@ def is_quota_error(e) -> bool:
  
  
 def main(run_limit):
-    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
- 
     total_embedded = 0
     requests_made = 0
  
@@ -127,7 +145,7 @@ def main(run_limit):
             print(f"\nReached this run's limit of {run_limit} passages.")
             break
  
-        rows = fetch_unembedded_passages(supabase, DB_FETCH_SIZE)
+        rows = db(lambda s: fetch_unembedded_passages(s, DB_FETCH_SIZE))
         if not rows:
             print("\nNo passages left with NULL embeddings. Fully caught up.")
             break
@@ -161,9 +179,10 @@ def main(run_limit):
                 return
  
             for row, vec in zip(batch, vectors):
-                supabase.table("passages").update(
+                # row=row, vec=vec pin the current loop values into the lambda
+                db(lambda s, row=row, vec=vec: s.table("passages").update(
                     {"embedding": format_vector(vec)}
-                ).eq("id", row["id"]).execute()
+                ).eq("id", row["id"]).execute())
                 total_embedded += 1
  
             print(f"  Embedded passages id {batch[0]['id']}-{batch[-1]['id']} "
@@ -183,4 +202,3 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(args.limit)
- 

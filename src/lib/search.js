@@ -50,37 +50,38 @@ const embeddingCache = new Map();
 
 export async function embedQuery(query) {
   const text = (query ?? "").trim().slice(0, MAX_QUERY_LENGTH);
-  if (!text) {
-    throw new Error("Empty search query");
-  }
+  if (!text) throw new Error("Empty search query");
+  const cacheKey = text.toLowerCase().replace(/\s+/g, " ");
 
-  const cached = embeddingCache.get(text);
+  const cached = embeddingCache.get(cacheKey);
   if (cached) {
     // Re-insert to mark as most recently used.
-    embeddingCache.delete(text);
-    embeddingCache.set(text, cached);
+    embeddingCache.delete(cacheKey);
+    embeddingCache.set(cacheKey, cached);
     return cached;
   }
 
   let values;
-  try {
-    const embedResponse = await getAi().models.embedContent({
-      model: GEMINI_EMBEDDING_MODEL,
-      contents: text,
-      config: {
-        taskType: "RETRIEVAL_QUERY",
-        outputDimensionality: OUTPUT_DIMENSIONALITY,
-      },
-    });
-    values = embedResponse.embeddings[0].values;
-  } catch (err) {
-    if (err?.status === 429) {
-      throw new SearchRateLimitError();
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const embedResponse = await getAi().models.embedContent({
+        model: GEMINI_EMBEDDING_MODEL,
+        contents: text,
+        config: {
+          taskType: "RETRIEVAL_QUERY",
+          outputDimensionality: OUTPUT_DIMENSIONALITY,
+        },
+      });
+      values = embedResponse.embeddings[0].values;
+      break;
+    } catch (err) {
+      if (err?.status !== 429) throw err;
+      if (attempt === 1) throw new SearchRateLimitError();
+      await new Promise((r) => setTimeout(r, 1000));
     }
-    throw err;
   }
 
-  embeddingCache.set(text, values);
+  embeddingCache.set(cacheKey, values);
   if (embeddingCache.size > EMBEDDING_CACHE_MAX) {
     // Map iterates in insertion order, so the first key is the oldest.
     embeddingCache.delete(embeddingCache.keys().next().value);
